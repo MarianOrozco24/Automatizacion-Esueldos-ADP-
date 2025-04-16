@@ -1,4 +1,4 @@
-# 📊 Procesador de Novedades Mensuales
+# 📊 Procesador de Informes Mensuales para E-Sueldos
 
 Este script en Python automatiza la lectura, transformación y exportación de datos desde un archivo Excel con novedades mensuales del personal. Ideal para preparar archivos listos para ser importados en sistemas como **E-sueldos** u otros de gestión de recursos humanos.
 
