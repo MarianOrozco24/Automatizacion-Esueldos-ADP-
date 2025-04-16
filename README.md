@@ -36,7 +36,7 @@ Cada fila del archivo exportado contiene:
 | Columna     | Tipo de novedad detectada              |
 | MesAjuste   | Igual que Mes (puede ajustarse luego)  |
 | Forzado     | 0 por defecto                          |
-| Unidades    | Valor numérico de la novedad           |
+| Unidades    | Cantidad numerica de cada novedad      |
 | Importe     | 0 por defecto                          |
 
 ---
