@@ -1,6 +1,7 @@
 # gitignore
 # Entornos virtuales
 .venv/
+outputs/
 
 # Variables de entorno
 .env
