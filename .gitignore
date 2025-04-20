@@ -1,0 +1,9 @@
+# gitignore
+# Entornos virtuales
+.venv/
+
+# Variables de entorno
+.env
+
+# Archivos json
+*.json
