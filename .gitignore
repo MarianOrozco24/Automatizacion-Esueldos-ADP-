@@ -6,5 +6,4 @@ outputs/
 # Variables de entorno
 .env
 
-# Archivos json
-*.json
+
