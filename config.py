@@ -1,0 +1,2 @@
+class Config:
+    columnas_a_filtrar = ["Legajo", "Basico", "Vacaciones", "Feriado", "D. Mudanza", "D. Estudio", "D. Suspension", "D. Tramite","Hs Extras", "Dep. Judicial", "Prepaga", "Enlazados", "Ant. de Sueldos", "Adic. Ventas"]
