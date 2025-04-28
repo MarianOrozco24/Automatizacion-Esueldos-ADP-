@@ -1,10 +1,117 @@
 
 
 
-[2025-04-27 23:30:05.050465] ✅ Conexion exitosa a base de datos
-[2025-04-27 23:30:05.926659] ✅ Se extrajo correctamente la informacion a base de datos
-[2025-04-27 23:30:06.789093] ✅ Se codifico correctamente el dataset extraido de payroll
-[2025-04-27 23:30:07.028959] ✅ Se codifico correctamente el dataset extraido de la planilla de novedades
+[2025-04-28 09:18:10] ✅ Conexion exitosa a base de datos
+[2025-04-28 09:18:10] ✅ Se extrajo correctamente la informacion a base de datos
+[2025-04-28 09:18:11] ✅ Se codifico correctamente el dataset extraido de payroll
+[2025-04-28 09:18:11] ✅ Se codifico correctamente el dataset extraido de novedades
+> Se obtuvieron 207 filas de novedades
+> Se obtuvieron 189 filas de payroll
+> Se exportaron 379 filas
+ - El proceso finalizo exitosamente - 
+
+
+
+
+
+
+
+
+
+
+
+
+[2025-04-28 09:33:15] ✅ Conexion exitosa a base de datos
+[2025-04-28 09:33:16] ✅ Se extrajo correctamente la informacion a base de datos
+[2025-04-28 09:33:16] ✅ Se codifico correctamente el dataset extraido de payroll
+[2025-04-28 09:33:16] ✅ Se codifico correctamente el dataset extraido de novedades
+> Se obtuvieron 207 filas de novedades
+> Se obtuvieron 189 filas de payroll
+> Se exportaron 379 filas
+ - El proceso finalizo exitosamente - 
+
+
+
+
+
+
+
+
+
+
+
+
+[2025-04-28 09:40:15] ✅ Conexion exitosa a base de datos
+[2025-04-28 09:40:16] ✅ Se extrajo correctamente la informacion a base de datos
+[2025-04-28 09:40:16] ✅ Se codifico correctamente el dataset extraido de payroll
+[2025-04-28 09:40:16] ✅ Se codifico correctamente el dataset extraido de novedades
+> Se obtuvieron 207 filas de novedades
+> Se obtuvieron 189 filas de payroll
+> Se exportaron 379 filas
+ - El proceso finalizo exitosamente - 
+
+
+
+[2025-04-28 12:00:17] ✅ Conexion exitosa a base de datos
+[2025-04-28 12:00:18] ✅ Se extrajo correctamente la informacion a base de datos
+[2025-04-28 12:00:18] ✅ Se codifico correctamente el dataset extraido de payroll
+[2025-04-28 12:00:18] ✅ Se codifico correctamente el dataset extraido de novedades
+> Se obtuvieron 207 filas de novedades
+> Se obtuvieron 189 filas de payroll
+> Se exportaron 379 filas
+ - El proceso finalizo exitosamente - 
+
+
+
+[2025-04-28 12:25:27] ❌ Ocurrio un error al conectarse a base de datos
+[2025-04-28 12:25:27]❌ Ocurrio un error al extraer los datos de la tabla payroll
+Ha ocurrido un error en el procesamiento del reporte payroll - (procesamiento_payroll)
+[2025-04-28 12:25:27] ✅ Se codifico correctamente el dataset extraido de novedades
+> Se obtuvieron 207 filas de novedades
+> Se obtuvieron 0 filas de payroll
+> Se exportaron 207 filas
+ - El proceso finalizo exitosamente - 
+
+
+
+
+
+
+[2025-04-28 12:30:03] ❌ Ocurrio un error al conectarse a base de datos
+[2025-04-28 12:30:03]❌ Ocurrio un error al extraer los datos de la tabla payroll
+Ha ocurrido un error en el procesamiento del reporte payroll - (procesamiento_payroll)
+[2025-04-28 12:30:04] ✅ Se codifico correctamente el dataset extraido de novedades
+> Se obtuvieron 207 filas de novedades
+> Se obtuvieron 0 filas de payroll
+> Se exportaron 207 filas
+ - El proceso finalizo exitosamente - 
+
+
+
+[2025-04-28 12:35:59] ❌ Ocurrio un error al conectarse a base de datos
+[2025-04-28 12:35:59]❌ Ocurrio un error al extraer los datos de la tabla payroll
+Ha ocurrido un error en el procesamiento del reporte payroll - (procesamiento_payroll)
+[2025-04-28 12:35:59] ✅ Se codifico correctamente el dataset extraido de novedades
+> Se obtuvieron 207 filas de novedades
+> Se obtuvieron 0 filas de payroll
+> Se exportaron 207 filas
+ - El proceso finalizo exitosamente - 
+
+
+
+
+
+
+
+
+
+
+
+
+[2025-04-28 13:23:12] ✅ Conexion exitosa a base de datos
+[2025-04-28 13:23:12] ✅ Se extrajo correctamente la informacion a base de datos
+[2025-04-28 13:23:13] ✅ Se codifico correctamente el dataset extraido de payroll
+[2025-04-28 13:23:13] ✅ Se codifico correctamente el dataset extraido de novedades
 > Se obtuvieron 207 filas de novedades
 > Se obtuvieron 189 filas de payroll
 > Se exportaron 379 filas

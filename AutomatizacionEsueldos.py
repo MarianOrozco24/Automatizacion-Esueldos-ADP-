@@ -3,7 +3,9 @@ import customtkinter as ctk
 import datetime, os, dotenv, json
 import mysql.connector.connection
 from config import Config
-from tkinter import messagebox
+from tkinter import messagebox as mx
+import traceback
+import subprocess
 
 dotenv.load_dotenv()
 # Configuracion ruta json
@@ -13,33 +15,43 @@ with open("rutas.json", "r") as archivo:
 def escribir_registro(texto):
     with open("registro.txt", "a",encoding="utf-8") as registro:
         rutas = registro.write(f"{texto}\n")
-escribir_registro("\n\n")
+
 
 def escribir_errores (funcion, texto):
     with open("reporte_de_errores.txt", "a", encoding="utf-8") as registro:
-        error = registro.write(f"[{funcion}] {texto}")
+        error = registro.write(f"{funcion} {texto}")
 
 def obtener_hora_actual ():
     now = datetime.datetime.now() 
+    now = datetime.datetime.strftime(now, "%Y-%m-%d %H:%M:%S")
     return now
 
 
+escribir_registro("\n\n")
+escribir_errores("","\n\n")
+
 class ProcesamientoDeInformacion:
     def __init__(self, file_name):
-        self.df = pd.read_excel(f"{rutas['input']}Novedades {file_name}") # Consumimos el documento generado en el script anterior
-        self.df = self.df[[Config.columnas_a_filtrar]]
+        self.df = pd.read_excel(f"{rutas['input']}Novedades {file_name}.xlsx") # Consumimos el documento generado en el script anterior
+        self.df = self.df[Config.columnas_a_filtrar]
 
         self.host = os.getenv('DB_HOST')
         self.user = os.getenv("DB_USER")
         self.password = os.getenv("DB_PASS")
+        self.database = os.getenv("DB_DATABASE")
 
         self.resultado_novedades = []
         self.errores_novedades = []
 
-    def extraccion_dataset (self, database, tabla, query, columnas):
-        cnx = conexion_db(self.host, self.user, self.password, database) # Conexion con base de datos
-        resultado = extraccion_de_datos(cnx, query, tabla) # Extraccion de resultado
-        self.df_payroll = pd.DataFrame(resultado, columns=columnas) # Conversion del dataset en dataframe
+    def extraccion_dataset (self, tabla, query, columnas):
+        try:
+            cnx = conexion_db(self.host, self.user, self.password, self.database) # Conexion con base de datos
+            resultado = extraccion_de_datos(cnx, query, tabla) # Extraccion de resultado
+            self.df_payroll = pd.DataFrame(resultado, columns=columnas) # Conversion del dataset en dataframe
+        except Exception as error_conexion:
+            now = obtener_hora_actual()
+            escribir_errores(f"[{now}] Extraccion dataset", f"{now}")
+            exit()
 
     def procesamiento_payroll(self, codificado, codigo_empresa, year, month, tipo_pago):
         try:    
@@ -97,20 +109,20 @@ class ProcesamientoDeInformacion:
             self.df_novedades['Cantidad'] = self.df_novedades['Cantidad'].astype(int)
 
 
-    def exportacion_reporte(self):
+    def exportacion_reporte(self, file_name):
         try:    
             df_final = pd.concat([self.df_payroll, self.df_novedades],axis=0)
             df_final = df_final.groupby(by=['Empresa', 'Legajo','Periodo', 'Mes', 'Concepto', 'Tipo', 'Forzado'])['Cantidad'].sum().reset_index()
 
-            file_name = file_name.replace(".xlsx", "")
             df_final.to_excel(f"{rutas['Output']}E-Sueldos {file_name}.xlsx", index= False)
             escribir_registro(f"> Se obtuvieron {len(self.df_novedades)} filas de novedades")
-            escribir_registro(f"> Se obtuvieron {len(self.df_borrar)} filas de payroll")
+            escribir_registro(f"> Se obtuvieron {len(self.df_payroll)} filas de payroll")
             escribir_registro(f"> Se exportaron {len(df_final)} filas")
             escribir_registro(" - El proceso finalizo exitosamente - ")
+            mx.showinfo("Exportacion completa", f"Se exporto correctamente el archivo {file_name} en el directorio {rutas['input']}")
         except Exception as error_exportacion:
             escribir_registro("Ocurrio un error a la hora de exportar el registo")
-            escribir_errores("exportacion_reporte", f"{error_exportacion}")
+            escribir_errores("exportacion_reporte", f"{error_exportacion}\n")
 
     
 
@@ -118,13 +130,14 @@ def conexion_db(host, user, password, database):
     try:
         cnx = mysql.connector.connect(host= host, user=user, password=password, database=database)
         print("Conexion exitosa a base de datos")
-        now = datetime.now()
+        now = obtener_hora_actual()
         escribir_registro(f"[{now}] ✅ Conexion exitosa a base de datos")
         return cnx
     except Exception as conection_error:
         print(f"Se produjo un error al intentar conectarse a base de datos: \n{conection_error}")
-        now = datetime.now()
+        now = obtener_hora_actual()
         escribir_registro(f"[{now}] ❌ Ocurrio un error al conectarse a base de datos")
+
 def extraccion_de_datos (cnx, query, tabla):
     try:
         cursor = cnx.cursor()
@@ -134,17 +147,85 @@ def extraccion_de_datos (cnx, query, tabla):
             print("Advertencia. La consulta no trajo informacion") 
         cursor.close()
         cnx.close()
-        now = datetime.now()
+        now = obtener_hora_actual()
         escribir_registro(f"[{now}] ✅ Se extrajo correctamente la informacion a base de datos")
         print("Se extrajo la informacion correctamente de base de datos")
         return resultado
     except Exception as extract_error:
-        now = datetime.now()
+        now = obtener_hora_actual()
         print(f"Se produjo un error al extraer la informacion de base de datos {extract_error}\n {query}")
         escribir_registro(f"[{now}]❌ Ocurrio un error al extraer los datos de la tabla {tabla}")
 
 
+def main (input_month, input_year):
+    # Mesaje de aviso que informe que tiene que estar encendida la vpn y anteriormente realizada las novedades
+    condicional_proceso = mx.askquestion("Verificaciones", "Recorda que para que funcione esta automatizacion, anteriormente debes ejecutar el programa de novedades. Si ya tenes realizada dicha planilla, recorda que tenes que tener encendida la VPN antes de ejecutar\n\n ¿Esta todo ok?¿Desea continuar?")
+    if condicional_proceso is False:
+        exit()
+    # obtencion de valores ingresados en interfaz
+    try:
+        month = input_month.get()
+        if type(month) == str:
+            month = month.replace("0", "")
+        year = input_year.get()
+        date = datetime.datetime.strptime(f"{year}-{month}", "%Y-%m") # Convertimos los valores a tipo datetme
+        month_str = datetime.datetime.strftime(date, "%B") # Obtenemos el nombre del mes en cuestion
+        file_name = f"{month_str} {year}" # Nombre del archivo a procesar
+    except Exception as error:
+        mx.showerror("Obtencion de datos", "Ha ocurrido un error al procesar los datos ingresados. Corrobore los datos e intente nuevamente. En caso de que el problema persista, contacte al administrador del programa")
+        now = obtener_hora_actual()
+        traceback.print_exc()
+        escribir_errores(f"[{now}][Creacion de variable file_name]", f"{type(error)}Ocurrio un error al intentar procesar la informacion ingresada por el usuario - Mensaje de error {error}")
+
+    # Procesamiento de informacion
+    try:
+        query = Config.query_payroll(month, year)
+        procesador = ProcesamientoDeInformacion(file_name)
+        procesador.extraccion_dataset("payroll", query, Config.columnas_payroll)
+        procesador.procesamiento_payroll(Config.codificado, Config.codigo_empresa, year, month, Config.tipo_pago)
+        procesador.procesamiento_novedades(year, month, Config.codificado)
+        procesador.exportacion_reporte(file_name)
+    
+    except FileNotFoundError as file_no_encontrado:
+        mx.showerror("Archivo no encontrado", f"No se encontro el archivo {file_name}. Recorda que antes de ejecutar este programa, tenes que realizar las novedades")   
+    except Exception as error:
+        now = obtener_hora_actual()
+        escribir_errores(f"[{now}][Funcion Main - Procesamiento]", f"{error}\n")
+        mx.showerror("Error", "Ha ocurrido un error en el procesamiento del reporte. Por favor, contactar con el administrador del programa")
+
 
 if __name__ == '__main__':
-    procesador = ProcesamientoDeInformacion("March 2025.xlsx") # Cambiar
-    procesador.extraccion_dataset("db_omnia", "payroll", )
+    # Mesaje de aviso que informe que tiene que estar encendida la vpn y anteriormente realizada las novedades
+    """ VENTANA PRINCIPAL """
+    ctk.set_appearance_mode("dark")
+    ctk.set_default_color_theme("dark-blue")
+    ventana_principal = ctk.CTk()
+    ventana_principal.title("Administracion de Personal - Ventana Principal")
+    ventana_principal.geometry("700x400")
+
+    # titulo
+    label_title = ctk.CTkLabel(ventana_principal, text="Automatizacion E-Sueldos", font=("helvetica", 24, "bold"))
+    label_title.pack(pady=35, padx=5)
+
+    # frame_mes 
+    frame_mes = ctk.CTkFrame(ventana_principal, fg_color="#2C2F33")
+    frame_mes.pack(pady=15, padx=5)
+    input_month = ctk.CTkEntry(frame_mes, placeholder_text="Mes (Ej: 5)",fg_color="#2C2F33" )
+    input_month.pack(pady=1, padx=1)
+    # frame_año 
+    frame_año = ctk.CTkFrame(ventana_principal, fg_color="#2C2F33")
+    frame_año.pack(pady=15, padx=5)
+    input_year = ctk.CTkEntry(frame_año, placeholder_text="Año (Ej: 2025)", fg_color="#2C2F33")
+    input_year.pack(pady=2, padx=2)
+
+    frame_button = ctk.CTkFrame(ventana_principal, fg_color="#6A0DAD")
+    frame_button.pack(pady=60, padx=5)
+    button_continue = ctk.CTkButton(frame_button, text="Ejecutar",fg_color="#2C2F33", command=lambda: main(input_month, input_year))
+    button_continue.pack(pady=2, padx=2)
+
+    ventana_principal.bind("<Return>", lambda event: main(input_month, input_year))
+
+    ventana_principal.mainloop()
+
+
+
