@@ -122,7 +122,7 @@ class ProcesamientoDeInformacion:
             df = pd.DataFrame(self.errores_novedades)
             df.to_excel(f"Procesamiento_novedades{date}.xlsx", engine='openpyxl', index=False)
             escribir_errores(f"[{now} procesamiento_novedades]", error_novedades_captado)
-            mx.showinfo("Advertencia", "Algunos valores no han sido extraidos del reporte de novedades")
+            mx.showwarning("Advertencia", "Algunos valores no han sido extraidos del reporte de novedades")
         else:
             now = obtener_hora_actual()
             escribir_registro(f"[{now}] ✅ Se codifico correctamente el dataset extraido de novedades")
