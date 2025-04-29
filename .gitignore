@@ -6,4 +6,8 @@ outputs/
 # Variables de entorno
 .env
 
+build/
+dist/
+
+
 
