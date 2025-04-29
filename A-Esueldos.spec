@@ -1,12 +1,19 @@
 # -*- mode: python ; coding: utf-8 -*-
+from PyInstaller.utils.hooks import collect_all
+
+datas = [('rutas.json', '.')]
+binaries = []
+hiddenimports = []
+tmp_ret = collect_all('mysql')
+datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 
 
 a = Analysis(
     ['A-Esueldos.py'],
     pathex=[],
-    binaries=[],
-    datas=[('rutas.json', '.'), ('C:/Users/Usuario/Desktop/Codigos Planificacion Estrategica/Automatizacion-Adm-Personal/esueldos/.venv/Lib/site-packages/mysql/connector/locales', 'mysql/connector/locales')],
-    hiddenimports=['mysql', 'mysql.connector', 'mysql.connector.plugins.mysql_native_password'],
+    binaries=binaries,
+    datas=datas,
+    hiddenimports=hiddenimports,
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

@@ -56,7 +56,7 @@ class ProcesamientoDeInformacion:
         self.host = os.getenv('DB_HOST')
         self.user = os.getenv("DB_USER")
         self.password = os.getenv("DB_PASS")
-        self.database = os.getenv("DB_DATABASE")
+        self.database = os.getenv("DB_NAME")
 
         self.resultado_novedades = []
         self.errores_novedades = []
@@ -65,11 +65,10 @@ class ProcesamientoDeInformacion:
         try:
             cnx = conexion_db(self.host, self.user, self.password, self.database) # Conexion con base de datos
             resultado = extraccion_de_datos(cnx, query, tabla) # Extraccion de resultado
-            if len(resultado) > 0:
+            self.df_payroll = pd.DataFrame(resultado, columns=columnas) # Conversion del dataset en dataframe
+            if len(self.df_payroll) == 0:
                 mx.showerror("Exportacion de datos", "La consulta a la tabla payroll vino vacia")
                 exit()
-                self.df_payroll = pd.DataFrame(resultado, columns=columnas) # Conversion del dataset en dataframe
-                print(self.df_payroll)
         except Exception as error_conexion:
             now = obtener_hora_actual()
             escribir_errores(f"[{now}] Extraccion dataset", f"{now}")
@@ -164,7 +163,8 @@ def conexion_db(host, user, password, database):
         escribir_registro(f"[{now}] ✅ Conexion exitosa a base de datos")
         return cnx
     except Exception as conection_error:
-        print(f"Se produjo un error al intentar conectarse a base de datos: \n{conection_error}")
+        print(f"Se produjo un error al intentar conectarse a base de datos: \n{conection_error}\
+              host={os.getenv('DB_HOST')}, user={os.getenv('DB_USER')}, password={os.getenv('DB_PASS')}, database={os.getenv('DB_NAME')} ")
         now = obtener_hora_actual()
         escribir_registro(f"[{now}] ❌ Ocurrio un error al conectarse a base de datos")
 

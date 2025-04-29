@@ -4,5 +4,12 @@ pyinstaller --noconsole --onefile ^
  --hidden-import=mysql.connector ^
  --hidden-import=mysql.connector.plugins.mysql_native_password ^
  --add-data "rutas.json;." ^
- --add-data "C:/Users/Usuario/Desktop/Codigos Planificacion Estrategica/Automatizacion-Adm-Personal/esueldos/.venv/Lib/site-packages/mysql/connector/locales;mysql/connector/locales" ^
+ --add-data C:/Users/enzo.orozco/Desktop/Automatizacion-Esueldos-ADP-/.venv/Lib/site-packages/mysql/connector/locales;mysql/connector/locales" ^
  A-Esueldos.py
+
+
+ pyinstaller --noconsole --onefile ^
+--icon=icono/icon.ico ^
+--collect-all mysql ^
+--add-data "rutas.json;." ^
+A-Esueldos.py

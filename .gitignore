@@ -9,5 +9,10 @@ outputs/
 build/
 dist/
 
+# Ejecutables
+*.exe
+*.spec
+build/
+
 
 
