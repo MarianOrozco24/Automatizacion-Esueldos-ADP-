@@ -40,6 +40,10 @@ class Config:
     "D. Estudio" : 62,
     "D. Suspension" : 50,
     "D. Tramite" : 51,
+    "Adic. Ventas" : 45,
+    "Ant. de Sueldos" : 610,
+    "Dep. Judicial" : 51,
+    "Hs Extras" : 251,
     "Enlazados" : 675 
     }
 
