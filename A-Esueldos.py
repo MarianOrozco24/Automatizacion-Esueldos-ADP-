@@ -65,7 +65,11 @@ class ProcesamientoDeInformacion:
         try:
             cnx = conexion_db(self.host, self.user, self.password, self.database) # Conexion con base de datos
             resultado = extraccion_de_datos(cnx, query, tabla) # Extraccion de resultado
-            self.df_payroll = pd.DataFrame(resultado, columns=columnas) # Conversion del dataset en dataframe
+            if len(resultado) > 0:
+                mx.showerror("Exportacion de datos", "La consulta a la tabla payroll vino vacia")
+                exit()
+                self.df_payroll = pd.DataFrame(resultado, columns=columnas) # Conversion del dataset en dataframe
+                print(self.df_payroll)
         except Exception as error_conexion:
             now = obtener_hora_actual()
             escribir_errores(f"[{now}] Extraccion dataset", f"{now}")
@@ -87,6 +91,7 @@ class ProcesamientoDeInformacion:
                         "Forzado" : 0,
                         "Cantidad" : 1
                     })
+
             self.df_payroll = pd.DataFrame(info_recolectada_payroll)
             self.df_payroll = self.df_payroll.groupby(by=['Empresa', 'Legajo','Periodo', 'Mes', 'Concepto', 'Tipo', 'Forzado'])["Cantidad"].sum().reset_index()
             now = obtener_hora_actual()
@@ -137,18 +142,19 @@ class ProcesamientoDeInformacion:
         try:    
             df_final = pd.concat([self.df_payroll, self.df_novedades],axis=0)
             df_final = df_final.groupby(by=['Empresa', 'Legajo','Periodo', 'Mes', 'Concepto', 'Tipo', 'Forzado'])['Cantidad'].sum().reset_index()
-
-            df_final.to_excel(f"{rutas['Output']}E-Sueldos {file_name}.xlsx", index= False)
             escribir_registro(f"> Se obtuvieron {len(self.df_novedades)} filas de novedades")
             escribir_registro(f"> Se obtuvieron {len(self.df_payroll)} filas de payroll")
-            escribir_registro(f"> Se exportaron {len(df_final)} filas")
-            escribir_registro(" - El proceso finalizo exitosamente - ")
-            mx.showinfo("Exportacion completa", f"Se exporto correctamente el archivo {file_name} en el directorio {rutas['input']}")
+            escribir_registro(f"> Se obtuvieron {len(df_final)} filas totales")
+            if len(self.df_payroll) > 0 and len(self.df_novedades) > 0: # Corroboramos que ambos df tengan informacion
+                df_final.to_excel(f"{rutas['Output']}E-Sueldos {file_name}.xlsx", index= False)
+                escribir_registro(" - El proceso finalizo exitosamente - ")
+                mx.showinfo("Exportacion completa", f"Se exporto correctamente el archivo {file_name} en el directorio {rutas['input']}")
+            else:
+                exit() # En caso de que no salimos del programa
         except Exception as error_exportacion:
             escribir_registro("Ocurrio un error a la hora de exportar el registo")
             escribir_errores("exportacion_reporte", f"{error_exportacion}\n")
 
-    
 
 def conexion_db(host, user, password, database):
     try:
@@ -188,10 +194,8 @@ def main (input_month, input_year):
         exit()
     # obtencion de valores ingresados en interfaz
     try:
-        month = input_month.get()
-        if type(month) == str:
-            month = month.replace("0", "")
-        year = input_year.get()
+        month = int(input_month.get())            
+        year = int(input_year.get()) # Obtenemos el año ingresado por usuario
         date = datetime.datetime.strptime(f"{year}-{month}", "%Y-%m") # Convertimos los valores a tipo datetme
         month_str = datetime.datetime.strftime(date, "%B") # Obtenemos el nombre del mes en cuestion
         file_name = f"{month_str} {year}" # Nombre del archivo a procesar
